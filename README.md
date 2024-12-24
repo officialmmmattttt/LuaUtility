@@ -1,13 +1,13 @@
 # LuaUtility
-Get LuaUtility for Studio: https://create.roblox.com/store/asset/96130695107167/Luau
-To activate in your script, simply type the header --luauu and your done!
+Get LuaUtility for Studio: https://create.roblox.com/store/asset/96130695107167/
+To convert your script, type the header --luauu and your done!
 # Settings:
 - Ignore Flag -- It'll convert all scripts with or without the --luauu header
 - Manual Mode -- No longer converts any scripts so you'll have to require the script manually, I don't recommend this if your working alone because you can use the Ignore Flag setting but if your working as a group and some people don't have LuaUtility then I recommend using Manual Mode
 - None -- If you don't have Ignore Flag or Manual Mode enabled you'll have to type the header --luauu for LuaUtility to convert the script your editing
 - Convert Scripts -- Converts every single script with the --luauu header and settings override the --luauu header
 # Macros:
-All accessable macros:
+All accessible macros:
 
 	‎ani‎m -- you can play a animation on a humanoid character
 	
