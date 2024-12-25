@@ -95,15 +95,10 @@ widget.Title = "LuaUtility Settings"
 widget.Enabled = false
 
 local saved = plugin:GetSetting(key)
-local manual = false
 
 if saved then
 	if saved[1] == true then
 		saveAll = true
-	end
-
-	if saved[2] == true then
-		manual = true
 	end
 end
 
@@ -120,53 +115,22 @@ else
 	f.Frame1.fill.BackgroundColor3 = Color3.new(1, 1, 1)
 end
 
-if manual then
-	f.Frame2.fill.BackgroundColor3 = Color3.new(0.168627, 0.694118, 1)
-else
-	f.Frame2.fill.BackgroundColor3 = Color3.new(1, 1, 1)
-end
-
 f.Frame1.fill.ImageLabel.Visible = saveAll
-f.Frame2.fill.ImageLabel.Visible = manual
 
 f.Frame1.MouseButton1Click:Connect(function()
 	local script = f.Frame1.TextLabel
 
-	if not script.Parent.fill.ImageLabel.Visible then
+	if script.Parent.fill.ImageLabel.Visible == false then
 		script.Parent.fill.BackgroundColor3 = Color3.new(0.168627, 0.694118, 1)
 		saveAll = true
-
-		f.Frame2.fill.BackgroundColor3 = Color3.new(1, 1, 1)
-		f.Frame2.fill.ImageLabel.Visible = false
-		manual = false
 	else
 		script.Parent.fill.BackgroundColor3 = Color3.new(1, 1, 1)
 		saveAll = false
 	end
 
-	plugin:SetSetting(key, {saveAll, manual})
+	plugin:SetSetting(key, {saveAll})
 	script.Parent.fill.ImageLabel.Visible = not script.Parent.fill.ImageLabel.Visible
 end)
-
-f.Frame2.MouseButton1Click:Connect(function()
-	local script = f.Frame2.TextLabel
-
-	if not script.Parent.fill.ImageLabel.Visible then
-		script.Parent.fill.BackgroundColor3 = Color3.new(0.168627, 0.694118, 1)
-		manual = true
-
-		f.Frame1.fill.BackgroundColor3 = Color3.new(1, 1, 1)
-		f.Frame1.fill.ImageLabel.Visible = false
-		saveAll = false
-	else
-		script.Parent.fill.BackgroundColor3 = Color3.new(1, 1, 1)
-		manual = false
-	end
-
-	plugin:SetSetting(key, {saveAll, manual})
-	script.Parent.fill.ImageLabel.Visible = not script.Parent.fill.ImageLabel.Visible
-end)
-
 
 local StudioService = game:GetService("StudioService")
 
@@ -192,15 +156,15 @@ for _, v in client do
 	end
 end
 
-for _, v in both do
-	if libraries[v] then
-		customSyntaxTable["(%w+)%." .. v .. "%.(%w+)%((.*)%)"] = function(obj, method, args)
-			return string.format("MainModule:%s(\"%s\", %s)", v:gsub("^%l", string.upper), method, args)
-		end
-	else
-		customSyntaxTable["(%w+)" .. v .. "%((.*)%)"] = v:gsub(":", "")
-	end
-end
+--for _, v in both do
+--	if libraries[v] then
+--		customSyntaxTable["(%w+)%." .. v .. "%.(%w+)%((.*)%)"] = function(obj, method, args)
+--			return string.format("MainModule:%s(\"%s\", %s)", v:gsub("^%l", string.upper), method, args)
+--		end
+--	else
+--		customSyntaxTable["(%w+)" .. v .. "%((.*)%)"] = v:gsub(":", "")
+--	end
+--end
 
 local scriptSource = script.both.Source
 
@@ -259,7 +223,7 @@ local function appendLibraryFunctions(activeScript)
 	end
 
 	for _, libraryName in ipairs(librariesToInclude) do
-		libCode = libCode .. libraryName .. " = {} "
+		libCode = libCode .. "local " .. libraryName .. " = {} "
 
 		local module = script.libraries:FindFirstChild(libraryName)
 
@@ -398,13 +362,13 @@ local function transformCode(scriptSource, s)
 	)
 
 	for v, _ in libraries do
-		transformedSource = transformedSource:gsub("%s+" .. v .. "%s*=%s*%b{}%s*", "")
+		transformedSource = transformedSource:gsub("local%s+" .. v .. "%s*=%s*%b{}%s*", "")
 
 		transformedSource = transformedSource:gsub("function%s+MainModule:" .. v .. "_[%w_]+%s*%b()%s*end", "")
 	end
 
 	transformedSource = transformedSource
-		:gsub("LuaUtility", "")
+		:gsub(string.lower("Luauu"), "")
 		:gsub(",%s*%)", ")")
 		:gsub(thirdThing, "")
 
@@ -424,11 +388,6 @@ local function save(scriptToTransform)
 		if not luauContainer then
 			luauContainer = script:FindFirstChild("LuaUtility")
 			luauContainer.Parent = sss
-
-			local clientContainer = luauContainer:Clone()
-			clientContainer.Parent = game:GetService("StarterGui")
-
-			script["LuaUtility client module"]:Clone().Parent = clientContainer
 		end
 
 		local luauScript = scriptToTransform:FindFirstChild("LuaUtility Script") or Instance.new(scriptToTransform.ClassName, scriptToTransform)
@@ -450,9 +409,9 @@ local function saveScript(scriptToTransform)
 		if scriptToTransform:IsA("ModuleScript") then
 			if scriptToTransform.Name:find("LuaUtility Script") then return end
 
-			if scriptToTransform.Source:find(string.lower("--Luauu")) and not scriptToTransform.Parent.Name:lower():find("luaut") then
+			if scriptToTransform.Source:find(string.lower("--LuaUtility")) and not scriptToTransform.Parent.Name:lower():find("LuaUtility") then
 				save(scriptToTransform)
-			elseif saveAll and not scriptToTransform.Parent.Name:lower():find("luaut") then
+			elseif saveAll and not scriptToTransform.Parent.Name:lower():find("LuaUtility") then
 				save(scriptToTransform)
 			end
 
@@ -461,9 +420,9 @@ local function saveScript(scriptToTransform)
 
 		if scriptToTransform.Name:find("LuaUtility Script") or scriptToTransform.Enabled == false then return end
 
-		if scriptToTransform.Source:find(string.lower("--Luauu")) and not scriptToTransform.Parent.Name:lower():find("luaut") then
+		if scriptToTransform.Source:find(string.lower("--LuaUu")) and not scriptToTransform.Parent.Name:lower():find("LuaU") then
 			save(scriptToTransform)
-		elseif saveAll and not scriptToTransform.Parent.Name:lower():find("luaut") then
+		elseif saveAll and not scriptToTransform.Parent.Name:lower():find("LuaUtility") then
 			save(scriptToTransform)
 		end
 	end
@@ -516,7 +475,7 @@ local function checks(t, args)
 		if not luauSource then return false end
 		if not lastSource then return false end
 		if luauScript == activeScript then return false end
-		if not lastSource:find("Date = {}") then return false end
+		if not lastSource:find("local Date = {}") then return false end
 	end
 
 	return true
@@ -550,7 +509,7 @@ local function changeTo(newActiveScript : Script)
 			local activeSource = newActiveScript.Source
 			local luauSource = luauScript.Source
 
-			if not luauSource:find("Date = {}") then
+			if not luauSource:find("local Date = {}") then
 				warn("Orginial script detected as corrupted")
 			end
 
@@ -567,13 +526,11 @@ local function onActiveScriptChanged()
 
 	activeScript = newActiveScript
 
-	if not manual then
-		if activeScript or (lastScript ~= nil and lastScript.Parent ~= nil) then
-			changeTo(activeScript)
+	if activeScript or (lastScript ~= nil and lastScript.Parent ~= nil) then
+		changeTo(activeScript)
 
-			if not activeScript then
-				saveScript(lastScript)
-			end
+		if not activeScript then
+			saveScript(lastScript)
 		end
 	end
 end
@@ -586,12 +543,6 @@ if not sss:FindFirstChild("LuaUtility") then
 
 	local m = script.LuauMainModule:Clone()
 	m.Parent = luauContainer
-
-
-	local clientContainer = script:FindFirstChild("LuaUtility"):Clone()
-	clientContainer.Parent = game:GetService("StarterGui")
-
-	script["LuaUtility client module"]:Clone().Parent = luauContainer
 end
 
 if sss:FindFirstChild("LuaUtility") then
@@ -642,15 +593,12 @@ game:GetService("RunService").Heartbeat:Connect(function()
 		end
 
 		local newCode = activeScript.Source
-		
-		if not manual then
-			if newCode:find("--luauu") and not newCode:find("uiTransitions = {}") and not newCode:find("MathFunctions = {}") then
-				local libraryFunctions = appendLibraryFunctions(activeScript)
-				newCode = newCode:gsub("--luauu", libraryFunctions .. "\n--luauu\n")
+		if newCode:find(string.lower("--LuaUu")) and not newCode:find("local uiTransitions = {}") and not newCode:find("local MathFunctions = {}") then
+			local libraryFunctions = appendLibraryFunctions(activeScript)
+			newCode = newCode:gsub(string.lower("--LuaUu"), libraryFunctions .. `\n{string.lower("--LuaUu")}\n`)
 
-				if libraryFunctions ~= "" then
-					changeCode(newCode, activeScript)
-				end
+			if libraryFunctions ~= "" then
+				changeCode(newCode, activeScript)
 			end
 		end
 	end
