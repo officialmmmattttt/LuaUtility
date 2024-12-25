@@ -1,6 +1,7 @@
 # LuaUtility
 Get LuaUtility for Studio: https://create.roblox.com/store/asset/96130695107167/
 To convert your script, type the header --luauu and your done!
+If you want to contribute, make a pull request inside of [LuaUtility/modules](https://github.com/officialmmmattttt/LuaUtility/tree/main/modules)
 # Settings:
 - Ignore Flag -- It'll convert all scripts with or without the --luauu header
 - Manual Mode -- No longer converts any scripts so you'll have to require the script manually, I don't recommend this if your working alone because you can use the Ignore Flag setting but if your working as a group and some people don't have LuaUtility then I recommend using Manual Mode
